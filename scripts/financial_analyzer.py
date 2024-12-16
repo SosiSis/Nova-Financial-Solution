@@ -5,9 +5,7 @@ import numpy as np
 import plotly.express as px
 import matplotlib.pyplot as plt
 import seaborn as sns
-# from pypfopt.efficient_frontier import EfficientFrontier
-# from pypfopt import risk_models
-# from pypfopt import expected_returns
+
 
 class FinancialAnalyzer:
     def __init__(self, ticker, start_date, end_date):
@@ -17,18 +15,22 @@ class FinancialAnalyzer:
 
 
     def retrieve_stock_data(ticker, start_date, end_date):
-        """
-        Retrieve historical stock data using yfinance.
 
-        Parameters:
-        - ticker (str): The stock ticker symbol (e.g., 'AAPL').
-        - start_date (str): The start date for historical data in 'YYYY-MM-DD' format.
-        - end_date (str): The end date for historical data in 'YYYY-MM-DD' format.
-
-        Returns:
-        - pandas.DataFrame: Historical stock data.
-        """
         return yf.download(ticker, start=start_date, end=end_date)
+    
+    def calculate_technical_indicators(data):
+        # Ensure 'Close' column exists and is numeric
+        if 'Close' not in data.columns or not pd.api.types.is_numeric_dtype(data['Close']):
+            raise ValueError("'Close' column is missing or not numeric.")
+        
+        # Calculate indicators
+        data['SMA'] = ta.SMA(data['Close'].to_numpy(), timeperiod=3)
+        data['RSI'] = ta.RSI(data['Close'].to_numpy(), timeperiod=2)
+        data['EMA'] = ta.EMA(data['Close'].to_numpy(), timeperiod=3)
+        macd, macd_signal, _ = ta.MACD(data['Close'].to_numpy())
+        data['MACD'] = macd
+        data['MACD_Signal'] = macd_signal
+        return data
 
     def plot_stock_and_sma(df):
         """Plot stock closing price and 14-day SMA"""
