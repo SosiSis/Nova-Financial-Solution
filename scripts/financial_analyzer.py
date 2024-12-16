@@ -5,6 +5,7 @@ import numpy as np
 import plotly.express as px
 import matplotlib.pyplot as plt
 import seaborn as sns
+import pynance as pn
 
 
 class FinancialAnalyzer:
@@ -13,7 +14,10 @@ class FinancialAnalyzer:
         self.start_date = start_date
         self.end_date = end_date
 
-
+    def calculate_bollinger_bands(stock_data, window=20, num_std_dev=2):
+        stock_data['BB_upper'], stock_data['BB_lower'] = pn.indicators.BBANDS(stock_data['Close'], window=window, num_std_dev=num_std_dev)
+        return stock_data
+    
     def retrieve_stock_data(ticker, start_date, end_date):
 
         return yf.download(ticker, start=start_date, end=end_date)
